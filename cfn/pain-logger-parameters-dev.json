@@ -10,5 +10,9 @@
     {
         "ParameterKey": "DomainName",
         "ParameterValue": "pain-logger.dev.failsave.io"
+    },
+    {
+        "ParameterKey": "HostedZoneId",
+        "ParameterValue": "Z13GTTPPJALNFR"
     }
 ]

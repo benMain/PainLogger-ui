@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Description: The Fully Qualified Domain Name of the Website
     MinLength: "0"
+  HostedZoneId:
+    Type: String
+    Description: The HostedZoneId where the Record Set will be created
+    MinLength: "0"
 
 Resources:
   LoggingBucket:
@@ -58,6 +62,17 @@ Resources:
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: "Users cannot look at S3 Itself!"
+
+  Route53DomainName:
+    Type: AWS::Route53::RecordSet
+    Properties: 
+      AliasTarget: 
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+      Comment: !Sub PainLogger-ui ${Environment} Domain Name Record Set
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
@@ -116,3 +131,5 @@ Resources:
           AcmCertificateArn: !Ref CertificateArn
           MinimumProtocolVersion: TLSv1.1_2016
           SslSupportMethod: sni-only
+
+
