@@ -68,7 +68,7 @@ jobs:
           name: Deploy
           command: |
                 cd /tmp/workspace/assets
-                deploy.sh pain-logger dev
+                ./deploy.sh pain-logger dev
                 aws s3 sync /tmp/workspace/assets/www s3://pain-logger-dev-446226631021/
 
 workflows:
