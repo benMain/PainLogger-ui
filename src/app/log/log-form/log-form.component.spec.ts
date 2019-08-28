@@ -2,6 +2,9 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LogFormComponent } from './log-form.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 describe('LogFormComponent', () => {
   let component: LogFormComponent;
@@ -11,6 +14,7 @@ describe('LogFormComponent', () => {
     TestBed.configureTestingModule({
       declarations: [LogFormComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule],
     }).compileComponents();
   }));
 
