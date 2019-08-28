@@ -1,0 +1,118 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  Environment:
+    Type: String
+  CertificateArn:
+    Type: String
+    Description: SSL/TLS Certificate Arn for the Custom Domain Name
+    MinLength: "0"
+  DomainName:
+    Type: String
+    Description: The Fully Qualified Domain Name of the Website
+    MinLength: "0"
+
+Resources:
+  LoggingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: LogDeliveryWrite
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub "pain-logger-${Environment}-logs-${AWS::AccountId}"
+
+  PainLoggerWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName: !Sub "pain-logger-${Environment}-${AWS::AccountId}"
+      WebsiteConfiguration:
+        ErrorDocument: index.html
+        IndexDocument: index.html
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PainLoggerWebsiteBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:GetObject"
+            Effect: "Allow"
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+            Resource: !Sub "arn:aws:s3:::${PainLoggerWebsiteBucket}/*"
+
+          - Action:
+              - "s3:ListBucket"
+            Effect: "Allow"
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+            Resource: !Sub "arn:aws:s3:::${PainLoggerWebsiteBucket}"
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "Users cannot look at S3 Itself!"
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref DomainName
+        Comment: !Sub Pain Logger Application for ${Environment} Environment
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+        DefaultCacheBehavior:
+          Compress: true
+          DefaultTTL: 60
+          MaxTTL: 300
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          TargetOriginId: !Ref PainLoggerWebsiteBucket
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: false
+        Logging:
+          Bucket: !GetAtt LoggingBucket.DomainName
+          IncludeCookies: false
+          Prefix: logs
+        Origins:
+          - DomainName: !GetAtt PainLoggerWebsiteBucket.DomainName
+            Id: !Ref PainLoggerWebsiteBucket
+            S3OriginConfig:
+              OriginAccessIdentity:
+                !Join [
+                  "",
+                  [
+                    "origin-access-identity/cloudfront/",
+                    !Ref CloudFrontOriginAccessIdentity,
+                  ],
+                ]
+        PriceClass: PriceClass_100
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: whitelist
+            Locations:
+              - US
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          MinimumProtocolVersion: TLSv1.1_2016
+          SslSupportMethod: sni-only
