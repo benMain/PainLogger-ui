@@ -1,0 +1,62 @@
+<form [formGroup]="logForm" (ngSubmit)="savePainLog()">
+    <ion-list lines="inset" inset=true>
+
+      <ion-list-header class="formHeader">
+          <h3>New Log Entry</h3>
+      </ion-list-header>
+
+      <ion-item>
+          <ion-label position="stacked">Start Date</ion-label>
+          <ion-datetime displayFormat="HH:mm" 
+            pickerFormat="YYYY-MM-DDTHH:mm" 
+            formControlName="startDate">
+          </ion-datetime>
+      </ion-item>
+
+      <ion-item>
+          <ion-label position="stacked">Start Pain</ion-label>
+          <ion-range min="0" max="10" step="1" snaps ticks pin formControlName="startPain">
+            <ion-icon slot="start" size="large" color="success" name="happy"></ion-icon>
+            <ion-icon slot="end" size="large" color="primary" name="sad"></ion-icon>
+          </ion-range>
+      </ion-item>
+
+      <ion-item>
+          <ion-label position="stacked">End Date</ion-label>
+          <ion-datetime displayFormat="HH:mm" 
+            pickerFormat="YYYY-MM-DDTHH:mm" 
+            formControlName="endDate">
+        </ion-datetime>
+      </ion-item>
+
+      <ion-item>
+          <ion-label position="stacked">End Pain</ion-label>
+          <ion-range min="0" max="10" step="1" snaps ticks pin formControlName="endPain">
+            <ion-icon slot="start" size="large" color="success" name="happy"></ion-icon>
+            <ion-icon slot="end" size="large" color="primary" name="sad"></ion-icon>
+          </ion-range>
+      </ion-item>
+
+      <ion-item>
+          <ion-label position="stacked">Pain Therapy</ion-label>
+          <ion-select multiple okText="Confirm" cancelText="Cancel" formControlName="therapy">
+            <ion-select-option value="music">Music</ion-select-option>
+            <ion-select-option value="television">Television</ion-select-option>
+            <ion-select-option value="pornography">Porn</ion-select-option>
+            <ion-select-option value="marijuana">Marijuana</ion-select-option>
+            <ion-select-option value="opiods">Opiods</ion-select-option>
+            <ion-select-option value="sex">Sex</ion-select-option>
+            <ion-select-option value="sleep">Sleep</ion-select-option>
+          </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Additional Notes</ion-label>
+        <ion-textarea formControlName="notes"></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding">
+      <ion-button color="dark" expand="block" type="submit" disabled="{{this.logForm.invalid}}">Log It!</ion-button>
+    </div>
+  </form>

@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>User</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="!!vm">
+    <ion-card-header color="secondary">
+      <ion-card-title>Information</ion-card-title>
+    </ion-card-header>
+  
+    <ion-card-content>
+      <ion-grid id="demo-grid">
+        <div *ngFor="let row of vm.rows">
+          <ion-row>
+            <ion-col *ngFor="let col of row.cols" size="4">
+              <h2> <ion-icon class="iconic" name="{{col.icon}}"></ion-icon>{{ col.label }}</h2>
+              {{ col.value }}
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+  <section *ngIf="!vm">
+      <ion-button expand="block" (click)="loginGoogle()"><ion-icon name="logo-google"></ion-icon>Login</ion-button>
+  </section>
+</ion-content>
